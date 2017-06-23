@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 // Download file (src) and write it to dst
@@ -33,18 +34,40 @@ func Download(src, dst string) error {
 }
 
 // Unzip extract contents of a zip file
-func Unzip(zipfile string) error {
+func Unzip(zipfile, target string) error {
 	reader, err := zip.OpenReader(zipfile)
 	if err != nil {
 		return err
 	}
 	defer reader.Close()
 
-	for _, f := range reader.Reader.File {
-		zipped, err := f.Open()
+	if err := os.MkdirAll(target, 0755); err != nil {
+		return err
+	}
+
+	for _, file := range reader.File {
+		path := filepath.Join(target, file.Name)
+		fmt.Printf("path = %+v\n", path)
+		if file.FileInfo().IsDir() {
+			os.MkdirAll(path, file.Mode())
+			continue
+		}
+
+		fileReader, err := file.Open()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return err
+		}
+		defer fileReader.Close()
+
+		targetFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		if err != nil {
+			return err
+		}
+		defer targetFile.Close()
+
+		if _, err := io.Copy(targetFile, fileReader); err != nil {
+			return err
 		}
 	}
+	return nil
 }

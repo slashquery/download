@@ -13,4 +13,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	err = download.Unzip("/tmp/sq.zip", "/tmp/sq")
 }
