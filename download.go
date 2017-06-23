@@ -1,11 +1,14 @@
 package download
 
 import (
+	"archive/zip"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
 
+// Download file (src) and write it to dst
 func Download(src, dst string) error {
 	out, err := os.Create(dst)
 	if err != nil {
@@ -27,4 +30,21 @@ func Download(src, dst string) error {
 		return err
 	}
 	return nil
+}
+
+// Unzip extract contents of a zip file
+func Unzip(zipfile string) error {
+	reader, err := zip.OpenReader(zipfile)
+	if err != nil {
+		return err
+	}
+	defer reader.Close()
+
+	for _, f := range reader.Reader.File {
+		zipped, err := f.Open()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+	}
 }
