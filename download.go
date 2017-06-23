@@ -1,4 +1,4 @@
-package dl
+package download
 
 import (
 	"io"
