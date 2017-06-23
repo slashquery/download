@@ -6,8 +6,10 @@ import (
 	"github.com/slashquery/download"
 )
 
+const URL = "https://codeload.github.com/slashquery/slashquery/zip/master"
+
 func main() {
-	err := download.Download("https://github.com/slashquery/slashquery/archive/master.zip", "/tmp/sq.zip")
+	err := download.Download(URL, "/tmp/sq.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
