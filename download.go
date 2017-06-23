@@ -17,7 +17,7 @@ func Download(src, dst string) error {
 		return err
 	}
 	defer r.Body.Close()
-	_, err := io.Copy(dst, r.Body)
+	_, err = io.Copy(out, r.Body)
 	if err != nil {
 		return err
 	}
